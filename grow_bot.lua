@@ -1,6 +1,6 @@
 --[[
     @author Arman Darmawan
-    @description Grow a Garden stock bot script (custom version)
+    @description Grow a Garden stock bot script (UI/UX Enhanced)
     Repository: https://github.com/ArmanDarmawan/roblox-grow-bot
 ]]
 
@@ -10,7 +10,7 @@ type table = {
 
 _G.Configuration = {
     ["Enabled"] = true,
-    ["Webhook"] = "https://discord.com/api/webhooks/1396316652211142760/IGAzWGQmc1wL-3o2W7gLyomP0ZIgA7aj_-7LJPFakFl9awSg9UAFvaX3YEWZcD-LDH1n", -- ganti dengan URL webhook kamu
+    ["Webhook"] = "https://discord.com/api/webhooks/1396316652211142760/IGAzWGQmc1wL-3o2W7gLyomP0ZIgA7aj_-7LJPFakFl9awSg9UAFvaX3YEWZcD-LDH1n",
     ["Weather Reporting"] = true,
     ["Anti-AFK"] = true,
     ["Auto-Reconnect"] = true,
@@ -23,26 +23,26 @@ _G.Configuration = {
         ["SeedsAndGears"] = {
             EmbedColor = Color3.fromRGB(56, 238, 23),
             Layout = {
-                ["ROOT/SeedStock/Stocks"] = "SEEDS STOCK",
-                ["ROOT/GearStock/Stocks"] = "GEAR STOCK"
+                ["ROOT/SeedStock/Stocks"] = "Seeds Stock",
+                ["ROOT/GearStock/Stocks"] = "Gear Stock"
             }
         },
         ["EventShop"] = {
             EmbedColor = Color3.fromRGB(212, 42, 255),
             Layout = {
-                ["ROOT/EventShopStock/Stocks"] = "EVENT STOCK"
+                ["ROOT/EventShopStock/Stocks"] = "Event Shop Stock"
             }
         },
         ["Eggs"] = {
             EmbedColor = Color3.fromRGB(251, 255, 14),
             Layout = {
-                ["ROOT/PetEggStock/Stocks"] = "EGG STOCK"
+                ["ROOT/PetEggStock/Stocks"] = "Egg Stock"
             }
         },
         ["CosmeticStock"] = {
             EmbedColor = Color3.fromRGB(255, 106, 42),
             Layout = {
-                ["ROOT/CosmeticStock/ItemStocks"] = "COSMETIC ITEMS STOCK"
+                ["ROOT/CosmeticStock/ItemStocks"] = "Cosmetic Items Stock"
             }
         }
     }
@@ -88,7 +88,7 @@ local function MakeStockString(Stock: table): string
         local Amount = Data.Stock
         local EggName = Data.EggName
         Name = EggName or Name
-        String ..= string.format("**%s x%s**\n", Name, Amount)
+        String ..= string.format("• **%s** x%s\n", Name, Amount)
     end
     return String
 end
@@ -98,13 +98,28 @@ local function WebhookSend(Type: string, Fields: table)
     local Layout = _G.Configuration.AlertLayouts[Type]
     local Color = ConvertColor3(Layout.EmbedColor)
 
+    local emojis = {
+        ["Weather"] = "⛅",
+        ["SeedsAndGears"] = "🌱⚙️",
+        ["EventShop"] = "🛍️",
+        ["Eggs"] = "🥚",
+        ["CosmeticStock"] = "💄"
+    }
+
+    local emoji = emojis[Type] or ""
+    local embedTitle = string.format("%s %s Update", emoji, Type:gsub("([A-Z])", " %1"):upper())
+
     local Body = {
+        username = "Grow Stock Bot 🌿",
+        avatar_url = "https://i.imgur.com/GVEFhQf.png", -- kamu bisa ganti icon-nya
         embeds = {
             {
+                title = embedTitle,
                 color = Color,
+                description = "📦 **Grow a Garden Stock Report**",
                 fields = Fields,
                 footer = {
-                    text = "Made by Arman Darmawan"
+                    text = "Made by Arman Darmawan | github.com/ArmanDarmawan"
                 },
                 timestamp = DateTime.now():ToIsoDate()
             }
@@ -129,9 +144,9 @@ local function ProcessPacket(Data, Type: string, Layout)
 
         local StockString = MakeStockString(Stock)
         table.insert(Fields, {
-            name = Title,
+            name = "📁 " .. Title,
             value = StockString,
-            inline = true
+            inline = false
         })
     end
 
@@ -154,9 +169,9 @@ WeatherEventStarted.OnClientEvent:Connect(function(Event: string, Length: number
     local EndUnix = math.round(workspace:GetServerTimeNow()) + Length
     WebhookSend("Weather", {
         {
-            name = "WEATHER",
-            value = string.format("%s\nEnds: <t:%s:R>", Event, EndUnix),
-            inline = true
+            name = "📡 Weather Event",
+            value = string.format("**%s**\n🕒 Ends: <t:%s:R>", Event, EndUnix),
+            inline = false
         }
     })
 end)

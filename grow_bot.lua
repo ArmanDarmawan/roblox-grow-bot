@@ -7,7 +7,7 @@
 -- Konfigurasi
 _G.Configuration = {
     Enabled = true,
-    Webhook = "https://discord.com/api/webhooks/...", -- Ganti dengan webhook kamu
+    Webhook = "https://discord.com/api/webhooks/1396305601054642298/8h_T7xbfHemULMhKR7lTfurD4RpuCJt6WWmfZ4yvQAJTvUFbfpKLFWqRf9COmxD9avFY", -- Ganti dengan webhook kamu
     WeatherReporting = true,
     AntiAFK = true,
     AutoReconnect = true,
